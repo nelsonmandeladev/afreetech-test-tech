@@ -22,7 +22,7 @@ export async function getAgencyById(id: string) {
     try {
         return await prisma.agence.findFirst({
             where: {
-                userId: id
+                id: id
             },
             select: {
                 clients: true,

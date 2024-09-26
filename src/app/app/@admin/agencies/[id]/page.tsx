@@ -15,9 +15,12 @@ export default async function AgencyDetailPage(props: AgencyDetailPageProps) {
   if (!agency) {
     return notFound();
   }
+
   return (
     <div className='w-full h-full'>
-
+      <h4 className="">
+        Details: {agency.nom}
+      </h4>
     </div>
   )
 }
