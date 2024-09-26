@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  agency     Agence?
+  assurances Assurance[]
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  AGENT
+  CLIENT
+  USER
+}
+
+model Agence {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  nom     String
+  clients Client[]
+
+  userId String @unique @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+
+  assurences Assurance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Client {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  nom    String
+  prenom String
+  email  String @unique
+  phone  String
+
+  agencyId String @db.ObjectId
+  agence   Agence @relation(fields: [agencyId], references: [id])
+
+  assurances Assurance[]
+
+  userId    String   @unique @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Assurance {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  amount Float
+
+  clientId String @db.ObjectId
+  client   Client @relation(fields: [clientId], references: [id])
+
+  useId    String @db.ObjectId
+  createBy User   @relation(fields: [useId], references: [id])
+
+  agencyId String @db.ObjectId
+  agency   Agence @relation(fields: [agencyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
